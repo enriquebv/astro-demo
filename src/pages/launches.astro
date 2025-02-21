@@ -1,0 +1,14 @@
+---
+import DefaultLayout from '../layouts/Default.astro'
+import LaunchesVue from '../components/Launches.vue'
+---
+
+<DefaultLayout>
+  <header>
+    <h1>SpaceX Launches</h1>
+  </header>
+
+  <section>
+    <LaunchesVue client:only />
+  </section>
+</DefaultLayout>

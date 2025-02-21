@@ -1,0 +1,63 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content'
+import DefaultLayout from '../layouts/Default.astro'
+import { render } from 'astro:content'
+import SlideLink from '../components/SlideLink.astro'
+
+export async function getStaticPaths() {
+  const slides = await getCollection('slides')
+
+  const sortedSlides = slides.toSorted(function sortByFilename(a: { id: string }, b: { id: string }) {
+    return a.id.localeCompare(b.id)
+  })
+  const firstSlideId = sortedSlides[0]?.id
+  const secondSlideId = sortedSlides[1]?.id
+
+  return sortedSlides.map((slide) => ({
+    params: {
+      slug: slide.id === firstSlideId ? '' : slide.id,
+    },
+    props: {
+      slide,
+      nextSlideId: sortedSlides[sortedSlides.indexOf(slide) + 1]?.id ?? null,
+      previousSlideId: slide.id === secondSlideId ? '' : (sortedSlides[sortedSlides.indexOf(slide) - 1]?.id ?? null),
+    },
+  }))
+}
+
+interface Props {
+  slide: CollectionEntry<'slides'>
+  nextSlideId: string | null
+  previousSlideId: string | null
+}
+
+const { slide, nextSlideId, previousSlideId } = Astro.props
+const { Content } = await render(slide)
+
+const isOdd = parseInt(slide.id) % 2 === 1
+---
+
+<DefaultLayout {...slide.data}>
+  <header>
+    <h1>{slide.data.title}</h1>
+
+    <nav>
+      <SlideLink link={previousSlideId}>prev</SlideLink>
+      <SlideLink link={nextSlideId}>next</SlideLink>
+    </nav>
+  </header>
+
+  <div
+    class:list={[
+      'content',
+      {
+        'content--reverse': isOdd,
+      },
+    ]}
+  >
+    <img transition:name='memillo' src={slide.data.image} alt={slide.data.title} />
+    <div class='content__wrapper' transition:name='content'>
+      <Content />
+    </div>
+  </div>
+</DefaultLayout>

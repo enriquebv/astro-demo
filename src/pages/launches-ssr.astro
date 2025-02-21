@@ -1,0 +1,28 @@
+---
+export const prerender = false
+import DefaultLayout from '../layouts/Default.astro'
+import LaunchesVue from '../components/Launches.vue'
+import APISDK from '../lib/api-sdk'
+import launchesFilterStore from '../stores/launches-filter'
+
+const apiSDK = new APISDK()
+// To pre-render content, we need to send "initial value".
+// Important: Make sure your API is idempotent, otherwise you may get hydration errors!
+const searchParams = Astro.url.searchParams
+console.log('searchParams', searchParams.get('name'))
+const initialLaunches = await apiSDK.getLaunches(launchesFilterStore(searchParams).state)
+---
+
+<DefaultLayout>
+  <header>
+    <h1>SpaceX Launches</h1>
+  </header>
+
+  <section>
+    <!-- Server rendered NOT interactive -->
+    <LaunchesVue initialLaunches={initialLaunches} initialSearchParams={searchParams} />
+
+    <!-- Server rendered interactive -->
+    <!-- <LaunchesVue initialLaunches={initialLaunches} initialSearchParams={searchParams} client:load /> -->
+  </section>
+</DefaultLayout>

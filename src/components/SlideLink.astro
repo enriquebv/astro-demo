@@ -1,0 +1,19 @@
+---
+interface Props {
+  link: string | null
+}
+
+const { link } = Astro.props
+---
+
+<a
+  href={link !== null ? `/${link}` : 'javascript:void(0)'}
+  class:list={[
+    'slide-link',
+    {
+      'slide-link--disabled': link === null,
+    },
+  ]}
+>
+  <slot />
+</a>

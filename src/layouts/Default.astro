@@ -1,0 +1,26 @@
+---
+import { ClientRouter } from 'astro:transitions'
+import BaseHead from '../components/BaseHead.astro'
+
+interface Props {
+  nextSlideId?: string
+  previousSlideId?: string
+}
+---
+
+<html lang='en'>
+  <head>
+    <BaseHead />
+    <ClientRouter />
+  </head>
+
+  <div class='small-screen-wall'>
+    <p>Tu pantalla es demasiado pequeña, espabila y ponte minimo a <var>1440px</var>.</p>
+  </div>
+
+  <body>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
